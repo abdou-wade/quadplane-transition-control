@@ -1,0 +1,14 @@
+# Module 01 / Level 0. More gets added as levels unlock.
+numpy>=1.24
+scipy>=1.10
+matplotlib>=3.7
+pytest>=7.4
+hypothesis>=6.80
+
+# Unlocked later -- uncomment when you reach the level.
+# control>=0.9      # Level 3, state space and LQR
+# osqp>=0.6         # Level 6, QP control allocation
+# qpsolvers>=4.0    # Level 6
+# allantools>=2019  # Level 4.4, IMU noise identification
+# SALib>=1.4        # Level 8, Sobol sensitivity
+# mavsdk>=1.4       # Lesson 10, offboard control
