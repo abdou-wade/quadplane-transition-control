@@ -83,3 +83,9 @@ def main():
 
 if __name__ == "__main__":
     main()
+## Quick lessons:
+## P reacts to present error but oscillates forever alone
+## D is a brake that adds damping, kills oscillation
+## I cancels steady-state error but can cause overshoot / oscillation
+## Saturation + windup: real actuators have limits. If the integral keeps
+## growing while maxed out, it builds a debt that overshoots later.]
