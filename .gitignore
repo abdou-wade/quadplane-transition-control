@@ -7,3 +7,6 @@ results/*.png
 *.ulg
 *.csv
 build/
+__pycache__/
+.pytest_cache/
+*.pyc
