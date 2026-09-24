@@ -132,3 +132,45 @@ if __name__ == "__main__":
     for thrust in (0, 30, 60):
         reading = baro.measure(10.0, thrust, dt)
         print(f"Baro  | {thrust:>2} N -> reads {reading:5.2f} m (true 10.00 m)")
+
+
+
+## NOTES
+## I learned that  a controller only knows what its sensors tell it.
+##   Real sensors never give the truth, so a sim that uses perfect state
+##   is lying to you. This file makes the sim lie the way reality does which is the goal .
+
+
+## THE ONE PATTERN: reading = truth + known-cause error + bias + noise
+##   noise -> random, zero-mean     -> fixed by AVERAGING 
+##   bias  -> constant offset       -> fixed by CALIBRATION
+##   drift -> bias that wanders     -> fixed by continuous ESTIMATION (Kalman filters)
+
+## FRAMES: world = NED (gravity [0,0,+9.81]); body frame = nose/right wing/belly.
+##   Sensors are bolted to the body -> they see world vectors.
+##   Tilt is detected by which body axis gravity appears along.
+## GYRO: measures rotation rate. Angle = integral of rate.
+##   Bias integrates into angle error that grows forever
+##   (0.5 deg/s bias x 120 s = 60 deg). Good short-term, bad long-term.
+##
+## ACCEL: measures proper acceleration = accel - gravity.
+##   Gyro + accel cover each other's weakness -> sensor fusion (L2).
+##
+
+## BARO: pressure -> altitude. Rotor wash corrupts it (error grows with
+##   thrust); weather makes it drift. Hardware (foam, placement) reduces
+##   it; software handles the rest.
+##
+## KNOWN-CAUSE ERRORS: current and thrust are measurable -> you know WHEN a
+##   sensor lies hardest -> trust it less then (regime-dependent R, L4).
+##   Matters most in transition: thrust changes most exactly then.
+##
+## DESIGN CHOICES:
+##   - Seeded rng passed in -> every run reproducible (Monte Carlo, L8).
+##   - Noise given as datasheet DENSITY; per-reading std = density/sqrt(dt).
+##   - Bias walk step = walk_std*sqrt(dt) -> drift independent of sample rate.
+##   - Shared _Sensor base class -> bias/noise logic written once.
+##
+## VERIFIED (demo): still gyro drifts 13-34 deg in 60 s | accel -9.8 at
+##   rest, 0 in free fall | mag error 1.7->11.2 uT for 0->40 A |
+##   baro 9.34->10.65 m for 0->60 N at true 10 m.
